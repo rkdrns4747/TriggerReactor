@@ -19,8 +19,12 @@ package io.github.wysohn.triggerreactor.manager.trigger;
 import java.io.File;
 import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -58,6 +62,7 @@ public abstract class LocationBasedTriggerManager<T extends Trigger> extends Tri
     public static final Material COPY_TOOL = Material.PAPER;
 
     private Map<SimpleChunkLocation, Map<SimpleLocation, T>> locationTriggers = new ConcurrentHashMap<>();
+    private List<SimpleLocation> indexMap = new ArrayList<>();
 
     private File folder;
     public LocationBasedTriggerManager(TriggerReactor plugin, String folderName) {
@@ -78,9 +83,21 @@ public abstract class LocationBasedTriggerManager<T extends Trigger> extends Tri
     public void reload(){
         locationTriggers.clear();
 
-        for(File file : folder.listFiles()){
-            if(file.isDirectory())
-                continue;
+        File[] fileList = folder.listFiles();
+        Arrays.sort(fileList, new Comparator<File>(){
+            @Override
+            public int compare(File o1, File o2) {
+                int indexo1 = Integer.parseInt(o1.getName().substring(0, o1.getName().indexOf('.')));
+                int indexo2 = Integer.parseInt(o2.getName().substring(0, o2.getName().indexOf('.')));
+
+                return indexo1 - indexo2;
+            }
+        });
+
+        for(File file : fileList){
+            if(file.isDirectory()){
+                throw new RuntimeException(file+" Directory is not allowed! cause by "+this.getClass().getSimpleName());
+            }
 
             String fileName = file.getName();
 
@@ -89,6 +106,9 @@ public abstract class LocationBasedTriggerManager<T extends Trigger> extends Tri
                 sloc = stringToSloc(fileName);
             }catch(Exception e){
                 e.printStackTrace();
+                synchronized(indexMap){
+                    indexMap.add(null);
+                }
                 continue;
             }
 
@@ -97,6 +117,9 @@ public abstract class LocationBasedTriggerManager<T extends Trigger> extends Tri
                 script = FileUtil.readFromFile(file);
             } catch (IOException e1) {
                 e1.printStackTrace();
+                synchronized(indexMap){
+                    indexMap.add(null);
+                }
                 continue;
             }
 
@@ -105,6 +128,9 @@ public abstract class LocationBasedTriggerManager<T extends Trigger> extends Tri
                 trigger = constructTrigger(script);
             } catch (LexerException | ParserException | IOException e) {
                 e.printStackTrace();
+                synchronized(indexMap){
+                    indexMap.add(null);
+                }
                 continue;
             }
 
@@ -118,6 +144,20 @@ public abstract class LocationBasedTriggerManager<T extends Trigger> extends Tri
                 }
 
                 triggerMap.put(sloc, trigger);
+
+                int index = stringToIndex(fileName);
+                synchronized(indexMap){
+                    while(indexMap.size() <= index){
+                        //add null to match the index
+                        indexMap.add(null);
+                    }
+
+                    indexMap.set(index, sloc);
+                }
+            } else {
+                synchronized(indexMap){
+                    indexMap.add(null);
+                }
             }
         }
     }
@@ -134,7 +174,19 @@ public abstract class LocationBasedTriggerManager<T extends Trigger> extends Tri
                 SimpleLocation sloc = entry.getKey();
                 T trigger = entry.getValue();
 
-                String fileName = slocToString(sloc);
+                int index = -1;
+
+                synchronized(indexMap){
+                    index = indexMap.indexOf(sloc);
+
+                    if(index == -1){
+                        plugin.getLogger().severe("location "+sloc+" had no index!");
+                        plugin.getLogger().severe("Cannot save "+sloc+". caused by "+getClass().getSimpleName());
+                        continue;
+                    }
+                }
+
+                String fileName = slocToString(index, sloc);
                 String script = trigger.getScript();
 
                 File file = new File(folder, fileName);
@@ -153,18 +205,25 @@ public abstract class LocationBasedTriggerManager<T extends Trigger> extends Tri
         }
     }
 
-    private String slocToString(SimpleLocation sloc){
-        return sloc.getWorld()+"@"+sloc.getX()+","+sloc.getY()+","+sloc.getZ();
+    private String slocToString(int index, SimpleLocation sloc){
+        return index+". "+sloc.getWorld()+"@"+sloc.getX()+","+sloc.getY()+","+sloc.getZ();
     }
 
     private SimpleLocation stringToSloc(String str){
-        String[] wsplit = str.split("@");
+        String[] isplit = str.split("\\.");
+
+        String[] wsplit = isplit[1].trim().split("@");
         String world = wsplit[0];
         String[] lsplit = wsplit[1].split(",");
         int x = Integer.parseInt(lsplit[0]);
         int y = Integer.parseInt(lsplit[1]);
         int z = Integer.parseInt(lsplit[2]);
         return new SimpleLocation(world, x, y, z);
+    }
+
+    private int stringToIndex(String str){
+        String[] isplit = str.split("\\.");
+        return Integer.parseInt(isplit[0]);
     }
 
     private Map<UUID, Long> lastClick = new HashMap<>();
@@ -363,7 +422,22 @@ public abstract class LocationBasedTriggerManager<T extends Trigger> extends Tri
 
         T result = triggerMap.remove(sloc);
 
-        File file = new File(folder, this.slocToString(sloc));
+        int index = -1;
+
+        synchronized(indexMap){
+            index = indexMap.indexOf(sloc);
+
+            if(index == -1){
+                plugin.getLogger().severe("location "+sloc+" had no index!");
+                plugin.getLogger().severe("Cannot delete file for "+sloc+". caused by "+getClass().getSimpleName());
+                return result;
+            }
+
+            indexMap.set(index, null);
+        }
+
+
+        File file = new File(folder, this.slocToString(index, sloc));
         file.delete();
 
         plugin.saveAsynchronously(this);

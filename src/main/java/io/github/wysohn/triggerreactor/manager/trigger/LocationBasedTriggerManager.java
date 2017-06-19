@@ -404,6 +404,10 @@ public abstract class LocationBasedTriggerManager<T extends Trigger> extends Tri
 
         triggerMap.put(sloc, trigger);
 
+        synchronized(indexMap){
+            indexMap.add(sloc);
+        }
+
         plugin.saveAsynchronously(this);
     }
 

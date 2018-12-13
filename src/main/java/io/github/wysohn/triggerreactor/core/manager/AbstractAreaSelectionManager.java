@@ -25,6 +25,7 @@ import java.util.UUID;
 import io.github.wysohn.triggerreactor.core.main.TriggerReactor;
 import io.github.wysohn.triggerreactor.core.manager.location.Area;
 import io.github.wysohn.triggerreactor.core.manager.location.SimpleLocation;
+import io.github.wysohn.triggerreactor.tools.ValidationUtil;
 
 public abstract class AbstractAreaSelectionManager extends Manager {
     protected final Set<UUID> selecting = new HashSet<>();
@@ -69,9 +70,12 @@ public abstract class AbstractAreaSelectionManager extends Manager {
      * @param action the {@link ClickAction} associated with this player interaction.
      * @param uuid the uuid of player
      * @param sloc location where interaction occurred
-     * @return the result as {@link ClickResult}
+     * @return the result as {@link ClickResult}. null if action was null.
      */
     protected ClickResult onClick(ClickAction action, UUID uuid, SimpleLocation sloc) {
+        ValidationUtil.notNull(uuid);
+        ValidationUtil.notNull(sloc);
+
         if(action == ClickAction.LEFT_CLICK_BLOCK){
             leftPosition.put(uuid, sloc);
         }else if(action == ClickAction.RIGHT_CLICK_BLOCK){

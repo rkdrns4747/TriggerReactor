@@ -64,7 +64,7 @@ public class ScriptEditManager extends AbstractScriptEditManager{
 	    ScriptEditor editor = new ScriptEditor(title, script, saveHandler);
 	    editings.put(editorUser, editor);
 
-	    editorUser.sendMessage(ScriptEditor.USAGE);
+	    editorUser.sendMessage(ScriptEditor.USAGE_KR);
 	    viewingUsage.add(editorUser);
 	}
 

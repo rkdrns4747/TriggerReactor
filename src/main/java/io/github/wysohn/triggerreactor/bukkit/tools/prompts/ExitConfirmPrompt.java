@@ -44,9 +44,9 @@ public class ExitConfirmPrompt implements Prompt {
 
 	@Override
 	public String getPromptText(ConversationContext arg0) {
-		return ChatColor.GOLD + "Are you sure to exit? " + ChatColor.RED + "Unsaved data will all be deleted! "
-				+ ChatColor.GOLD + "Type " + ChatColor.GREEN + "yes " + ChatColor.GOLD + "to exit or type "
-				+ ChatColor.RED + "anything " + ChatColor.BLUE + "to cancel.";
+		return ChatColor.GOLD + "종료하려는게 확실합니까?" + ChatColor.RED + "작성중인 구문이 저장되지 않았다면 삭제됩니다!"
+				+ ChatColor.GREEN + "yes " + ChatColor.GOLD + "를 입력하여 종료하거나,"
+				+ ChatColor.RED + "아무거나 " + ChatColor.BLUE + "입력하여 종료를 취소합니다.";
 	}
 
 }

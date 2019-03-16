@@ -187,6 +187,6 @@ public class ScriptEditor{
             + "&6type anything and press Tab key &dto copy the code where the cursor is pointing. Because of how minecraft client is made,"
             + " you need to specify space with &6^ to insert spaces. For example, you might can add four spaces before the code like this: "
             + "&6^^^^#MESSAGE \"HI\""
-            + "&aNow enter anything to continue..."
+            + "&aNow enter anything to continue...";
 	
 }

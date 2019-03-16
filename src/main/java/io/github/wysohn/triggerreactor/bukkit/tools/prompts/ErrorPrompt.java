@@ -43,7 +43,7 @@ public class ErrorPrompt implements Prompt {
 
 	@Override
 	public String getPromptText(ConversationContext arg0) {
-		return errorMessage+ChatColor.GREEN+"   "+"Type anything to continue...";
+		return errorMessage+ChatColor.GREEN+"   "+"아무거나 입력하여 계속합니다...";
 	}
 
 }

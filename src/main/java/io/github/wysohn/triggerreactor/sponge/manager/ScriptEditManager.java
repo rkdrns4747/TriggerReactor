@@ -64,7 +64,7 @@ public class ScriptEditManager extends AbstractScriptEditManager{
 	    ScriptEditor editor = new ScriptEditor(title, script, saveHandler);
 	    editings.put(editorUser, editor);
 
-	    editorUser.sendMessage(ScriptEditor.USAGE);
+	    editorUser.sendMessage(ScriptEditor.USAGE_KR);
 	    viewingUsage.add(editorUser);
 	}
 
@@ -91,16 +91,16 @@ public class ScriptEditManager extends AbstractScriptEditManager{
 	                plugin.handleException(e, ex);
 	            } finally {
 	                editings.remove(editorUser);
-	                editorUser.sendMessage("&aSaved!");
+	                editorUser.sendMessage("&a성공적으로 저장되었습니다.");
 	            }
 	        } else if (arg1.equals("exit")) {
 	            if(exitDoublecheck.remove(editorUser)) {
 	                editings.remove(editorUser);
-	                editorUser.sendMessage("&7Done");
+	                editorUser.sendMessage("&7성공적으로 종료하였습니다.");
 	            } else {
 	                exitDoublecheck.add(editorUser);
-	                editorUser.sendMessage("&6Are you sure to exit? &cUnsaved data will be all discared! "
-	                        + "&dType &6exit &done more time to confirm.");
+	                editorUser.sendMessage("&6종료하려는게 확실합니까? &c작성중인 구문이 저장되지 않았다면 삭제됩니다!"
+	                        + "&6exit &d을 한번 더 입력하여 종료합니다.");
 	            }
 	            return;
 	        } else if (arg1.equals("il")) {

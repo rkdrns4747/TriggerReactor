@@ -41,7 +41,7 @@ public class UsagePrompt implements Prompt{
 
     @Override
     public String getPromptText(ConversationContext arg0) {
-        return ChatColor.translateAlternateColorCodes('&', ScriptEditor.USAGE);
+        return ChatColor.translateAlternateColorCodes('&', ScriptEditor.USAGE_KR);
     }
 
 }

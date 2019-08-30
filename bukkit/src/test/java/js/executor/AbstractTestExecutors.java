@@ -148,7 +148,7 @@ public abstract class AbstractTestExecutors extends AbstractTestJavaScripts {
         Player vp2 = Mockito.mock(Player.class);
         Player nullP = null;
         JsTest test = new ExecutorTest(engine, "CLEARCHAT").addVariable("player", vp);
-
+        
         //case1
         test.withArgs().test();
         Mockito.verify(vp, times(30)).sendMessage("");

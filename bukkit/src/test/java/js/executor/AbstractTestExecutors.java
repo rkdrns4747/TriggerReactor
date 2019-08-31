@@ -42,7 +42,7 @@ public abstract class AbstractTestExecutors extends AbstractTestJavaScripts {
     
     @Test
     public void testPlayer_SetFlySpeed() throws Exception{
-        //TODOFORFIRST
+        //TODOFOR
     }
     
     @Test

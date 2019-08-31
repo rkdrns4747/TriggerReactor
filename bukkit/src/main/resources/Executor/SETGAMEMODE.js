@@ -1,13 +1,13 @@
 function SETGAMEMODE(args)
 {
-  if (args.length != 1)
+  if (args.length !== 1)
   {
     throw new Error("Incorrect number of arguments for executor SETGAMEMODE")
   }
   
   var arg = args[0]
   
-  if (typeof arg != "string")
+  if (typeof arg !== "string")
   {
     throw new Error("Invalid argument for Executor SETGAMEMODE: " + arg)
   }

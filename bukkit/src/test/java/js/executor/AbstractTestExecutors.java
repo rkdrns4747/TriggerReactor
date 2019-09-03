@@ -121,17 +121,62 @@ public abstract class AbstractTestExecutors extends AbstractTestJavaScripts {
     
     @Test
     public void testPlayer_SetMaxHealth() throws Exception{
-        //TODO
+        Player vp = Mockito.mock(Player.class);
+        JsTest test = new ExecutorTest(engine, "SETMAXHEALTH")
+                .addVariable("player", vp);
+
+        //case1
+        test.withArgs(30).test();
+        Mockito.verify(vp).setMaxHealth(30.0);
+
+        //case2
+        test.withArgs(35.4).test();
+        Mockito.verify(vp).setMaxHealth(35.4);
+
+        //Unexpected Cases
+        assertError(() -> test.withArgs(20, 33).test(), "Incorrect Number of arguments for Executor SETMAXHEALTH");
+        assertError(() -> test.withArgs("NONO").test(), "Invalid argument for SETMAXHEALTH: NONO");
+        assertError(() -> test.withArgs(-30).test(), "Argument for Executor SETMAXHEALTH should not be negative or zero");
+        assertError(() -> test.withArgs(2098).test(), "Maximum health cannot be greater than 2048");
     }
     
     @Test
     public void testPlayer_SetSaturation() throws Exception{
-        //TODO
+        Player vp = Mockito.mock(Player.class);
+        JsTest test = new ExecutorTest(engine, "SETSATURATION")
+                .addVariable("player", vp);
+
+        //case1
+        test.withArgs(25).test();
+        Mockito.verify(vp).setSaturation(25.0F);
+
+        //case2
+        test.withArgs(44.0).test();
+        Mockito.verify(vp).setSaturation(44.0F);
+
+        //Unexpected Cases
+        assertError(() -> test.withArgs().test(), "Incorrect Number of arguments for Executor SETSATURATION");
+        assertError(() -> test.withArgs("Hi").test(), "Invalid argument for SETSATURATION: Hi");
+        assertError(() -> test.withArgs(-45).test(), "Argument for Executor SETSATURATION should not be negative");
     }
     
     @Test
     public void testPlayer_SetWalkSpeed() throws Exception{
-        //TODO
+        Player vp = Mockito.mock(Player.class);
+        JsTest test = new ExecutorTest(engine, "SETWALKSPEED")
+                .addVariable("player", vp);
+        //case1
+        test.withArgs(1).test();
+        Mockito.verify(vp).setWalkSpeed(1.0F);
+
+        //case2
+        test.withArgs(0.7).test();
+        Mockito.verify(vp).setWalkSpeed(0.7F);
+
+        //Unexpected Cases
+        assertError(() -> test.withArgs().test(), "Incorrect Number of arguments for Executor SETWALKSPEED");
+        assertError(() -> test.withArgs("NUU").test(), "Invalid argument for SETWALKSPEED: NUU");
+        assertError(() -> test.withArgs(-3).test(), "Argument for Executor SETWALKSPEED is outside of the allowable range -1..1");
     }
     
     @Test

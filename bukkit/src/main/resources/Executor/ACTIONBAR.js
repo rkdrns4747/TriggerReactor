@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
 function ACTIONBAR(args) {
-	if(args.length == 1){
+	if(args.length === 1){
 		var ComponentBuilder = Java.type('net.md_5.bungee.api.chat.ComponentBuilder');
 		var component = new ComponentBuilder(args[0]).create();
 		var ChatMessageType = Java.type('net.md_5.bungee.api.ChatMessageType');
@@ -25,7 +25,7 @@ function ACTIONBAR(args) {
 		return null;
 	}
 	
-	if(args.length == 2){
+	if(args.length === 2){
 		var p = args[0];
 		var ComponentBuilder = Java.type('net.md_5.bungee.api.chat.ComponentBuilder');
 		var component = new ComponentBuilder(args[1]).create();

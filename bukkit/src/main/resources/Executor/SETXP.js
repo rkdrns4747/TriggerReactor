@@ -7,7 +7,7 @@ function SETXP(args)
   
   var arg = args[0]
   
-  if (!(typeof arg == "number"))
+  if (!(typeof arg === "number"))
   {
     throw new Error("Invalid argument for SETXP: " + arg)
   }

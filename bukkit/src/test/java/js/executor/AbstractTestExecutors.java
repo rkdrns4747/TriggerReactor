@@ -16,7 +16,10 @@ import java.util.Collection;
 import static io.github.wysohn.triggerreactor.core.utils.TestUtil.*;
 import java.util.ArrayList;
 import org.bukkit.GameMode;
-
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.ChatMessageType;
+import org.bukkit.entity.Player.Spigot;
 /**
  * Test driving class for testing Executors.
  *
@@ -181,12 +184,41 @@ public abstract class AbstractTestExecutors extends AbstractTestJavaScripts {
     
     @Test
     public void testPlayer_SetXp() throws Exception{
-        //TODO
+        Player vp = Mockito.mock(Player.class);
+        JsTest test = new ExecutorTest(engine, "SETXP")
+                .addVariable("player", vp);
+
+        //case1
+        test.withArgs(0.3).test();
+        Mockito.verify(vp).setExp(0.3F);
+
+        //case2
+        test.withArgs(1).test();
+        Mockito.verify(vp).setExp(1.0F);
+
+        //Unexpected Cases
+        assertError(() -> test.withArgs().test(), "Incorrect number of arguments for executor SETXP");
+        assertError(() -> test.withArgs("lmao").test(), "Invalid argument for SETXP: lmao");
+        assertError(() -> test.withArgs(33).test(), "33 is outside of the allowable range of 0..1 for executor SETXP");
+
+
+
     }
 
     @Test
     public void testActionBar() throws Exception{
-        //TODO
+/**        Player vp = Mockito.mock(Player.class);
+        Spigot sp = Mockito.mock(Spigot.class);
+        BaseComponent[] comp = new ComponentBuilder("-").create();
+        ChatMessageType msgType = ChatMessageType.ACTION_BAR;
+        JsTest test = new ExecutorTest(engine, "ACTIONBAR")
+                .addVariable("player", vp)
+                .addVariable("component", comp);
+
+        PowerMockito.when(vp, "spigot").thenReturn(sp);
+        test.withArgs("-").test();
+        Mockito.verify(sp).sendMessage(msgType, comp); **/
+        //TODO - error Occured
     }
     
     @Test
@@ -268,7 +300,20 @@ public abstract class AbstractTestExecutors extends AbstractTestJavaScripts {
     
     @Test
     public void testClearEntity() throws Exception{
-        //TODO
+        Player vp = Mockito.mock(Player.class);
+        Collection<Entity> entities = new ArrayList<>();
+        for(int i = 0; i < 10; i++){
+            entities.add(Mockito.mock(Entity.class));
+        }
+        JsTest test = new ExecutorTest(engine, "CLEARENTITY")
+                .addVariable("player", vp);
+        PowerMockito.when(vp, "getNearbyEntities", 2d, 2d, 2d).thenReturn(entities);
+        test.withArgs(2).test();
+        for(Entity ve : entities){
+            Mockito.verify(ve).remove();
+        }
+        assertError(() -> test.withArgs().test(), "Invalid parameters! [Number]");
+        assertError(() -> test.withArgs("NO").test(), "Invalid parameters! [Number]");
     }
     
     @Test

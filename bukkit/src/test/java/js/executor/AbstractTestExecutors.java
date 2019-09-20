@@ -6,12 +6,20 @@ import js.ExecutorTest;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.inventory.ItemStack;
 import org.junit.Test;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.ArgumentMatchers.any;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import java.util.Collection;
 import static io.github.wysohn.triggerreactor.core.utils.TestUtil.*;
 import java.util.ArrayList;
@@ -20,11 +28,13 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.entity.Player.Spigot;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionEffect;
+import java.util.Random;
 /**
  * Test driving class for testing Executors.
  *
  */
-
 public abstract class AbstractTestExecutors extends AbstractTestJavaScripts {
     @Test
     public void testPlayer_SetFlyMode() throws Exception{
@@ -117,7 +127,7 @@ public abstract class AbstractTestExecutors extends AbstractTestJavaScripts {
 
         //Unexpected Cases
         assertError(() -> test.withArgs(1, 334).test(), "Incorrect Number of arguments for executor SETHEALTH");
-        assertError(() -> test.withArgs("yeah").test(), "Invalid argument for SETHEALTH: yeah");
+        assertError(() -> test.withArgs("yeahh").test(), "Invalid argument for SETHEALTH: yeah");
         assertError(() -> test.withArgs(-17).test(), "Argument for Exector SETHEALTH should not be negative");
         assertError(() -> test.withArgs(50).test(),"Argument for Executor SETHEALTH is greater than the max health");
     }
@@ -206,19 +216,23 @@ public abstract class AbstractTestExecutors extends AbstractTestJavaScripts {
     }
 
     @Test
+//    @PrepareForTest({TriggerReactor.class, Spigot.class, BaseComponent.class, ComponentBuilder.class})
     public void testActionBar() throws Exception{
-/**        Player vp = Mockito.mock(Player.class);
+        /** Player vp = Mockito.mock(Player.class);
         Spigot sp = Mockito.mock(Spigot.class);
-        BaseComponent[] comp = new ComponentBuilder("-").create();
+        BaseComponent vBaseComponent = Mockito.mock(BaseComponent.class);
+        //PowerMockito.mockStatic(ComponentBuilder.class);
+        //BaseComponent[] comp = new ComponentBuilder("-").create();
         ChatMessageType msgType = ChatMessageType.ACTION_BAR;
         JsTest test = new ExecutorTest(engine, "ACTIONBAR")
                 .addVariable("player", vp)
-                .addVariable("component", comp);
-
+                .addVariable("component", vBaseComponent);
         PowerMockito.when(vp, "spigot").thenReturn(sp);
+        //PowerMockito.when(vCompBuilder, "create").thenReturn(vBaseComponent);
         test.withArgs("-").test();
-        Mockito.verify(sp).sendMessage(msgType, comp); **/
-        //TODO - error Occured
+        Mockito.verify(sp).sendMessage(msgType, vBaseComponent);
+         **/
+
     }
     
     @Test
@@ -318,12 +332,42 @@ public abstract class AbstractTestExecutors extends AbstractTestJavaScripts {
     
     @Test
     public void testClearPotion() throws Exception{
-        //TODO
+       /** Player vp = Mockito.mock(Player.class);
+        Player vp2 = Mockito.mock(Player.class);
+        Collection<PotionEffect> effects = new ArrayList<>();
+
+            effects.add(Mockito.mock(PotionEffect.class));
+        JsTest test = new ExecutorTest(engine, "CLEARPOTION")
+                .addVariable("player", vp);
+
+        PowerMockito.when(vp, "getActivePotionEffects").thenReturn(effects);
+        for(PotionEffect pot : effects){
+            PowerMockito.when(pot, "getType").thenReturn(PotionEffectType.BLINDNESS);
+        }
+
+        test.withArgs().test();
+        for(PotionEffect potion : effects){
+            Mockito.verify(vp).removePotionEffect(potion.getType());
+        }
+        test.addVariable("player", vp2);
+        PowerMockito.mockStatic(PotionEffectType.class);
+        //PowerMockito.when(PotionEffectType.class, "getByName", "HEAL").thenReturn(PotionEffectType.HEAL);
+        test.withArgs("heal").test();
+        Mockito.verify(vp2).removePotionEffect(PotionEffectType.getByName("HEAL"));
+
+        assertError(() -> test.withArgs("hello").test(), "Invalid PotionEffectType named HELLO");
+        **/
     }
     
     @Test
     public void testCloseGUI() throws Exception{
-        //TODO
+        Player vp = Mockito.mock(Player.class);
+        JsTest test = new ExecutorTest(engine, "CLOSEGUI")
+                .addVariable("player", vp);
+
+        //only happy case
+        test.withArgs().test();
+        Mockito.verify(vp).closeInventory();
     }
     
     @Test
@@ -338,27 +382,74 @@ public abstract class AbstractTestExecutors extends AbstractTestJavaScripts {
     
     @Test
     public void testDoorClose() throws Exception{
-        //TODO
+        /**Player vp = Mockito.mock(Player.class);
+        JsTest test = new ExecutorTest(engine, "DOORCLOSE")
+                .addVariable("player", vp);
+
+        World world = Mockito.mock(World.class);
+        Location loc = Mockito.mock(Location.class);
+        Block bl = Mockito.mock(Block.class);
+        BlockState bs = Mockito.mock(BlockState.class);
+        Openable oa = Mockito.mock(Openable.class);
+        PowerMockito.when(loc.getBlock()).thenReturn(bl);
+        PowerMockito.when(bl.getState()).thenReturn(bs);
+        PowerMockito.when(bs.getData()).thenReturn(oa);
+        test.withArgs(loc).test();
+        Mockito.verify(oa).setOpen(false);
+
+        //PowerMockito.when(vp, "getWorld").thenReturn(world2);
+        //test.withArgs(1, 3, 5).test();
+        //Mockito.verify(world2, 1, 3, 5);
+        **/
+        //This uses Openable interface, but It has different path between legacy ver and latest ver.
     }
     
     @Test
     public void testDoorOpen() throws Exception{
-        //TODO
+        //Same as above.
     }
     
     @Test
     public void testDoorToggle() throws Exception{
-        //TODO
+        //Same as above.
     }
     
     @Test
     public void testDropItem() throws Exception{
-        //TODO
+        /**
+        Player vp = Mockito.mock(Player.class);
+        JsTest test = new ExecutorTest(engine, "DROPITEM")
+                .addVariable("player", vp);
+        //happy case of arg.length == 2
+        Location loc1 = Mockito.mock(Location.class);
+        ItemStack item1 = Mockito.mock(ItemStack.class);
+        World world1 = Mockito.mock(World.class);
+        PowerMockito.when(loc1, "getWorld").thenReturn(world1);
+        test.withArgs(item1, loc1).test();
+        Mockito.verify(world1).dropItem(loc1, item1);
+
+        //happy case of args.length == 4
+        //case1 - integer item ID.
+        Location loc2 = Mockito.mock(Location.class);
+        World world2 = Mockito.mock(World.class);
+        PowerMockito.when(loc2, "getWorld").thenReturn(world2);
+        ItemStack tempItem = new ItemStack(Material.STONE, 2);
+        ItemStack item2 = Mockito.spy(tempItem);
+        test.addVariable("ItemStack", item2);
+        test.withArgs("STONE", 2, "NONE", loc2).test();
+        Mockito.verify(world2).dropItem(loc2, Mockito.any(ItemStack.class));
+        **/
     }
     
     @Test
     public void testExplosion() throws Exception{
-        //TODO
+        World world = Mockito.mock(World.class);
+        Location loc = new Location(world, 1, 2, 3);
+        Location vLoc = Mockito.spy(loc);
+        PowerMockito.when(Bukkit.class, "getWorld", "hello").thenReturn(world);
+        JsTest test = new ExecutorTest(engine, "EXPLOSION");
+        test.withArgs("hello", 1, 2, 3);
+        Mockito.verify(world).createExplosion(vLoc, 4.0F, false);
     }
     
     @Test
